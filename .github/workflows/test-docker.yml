@@ -15,11 +15,11 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/my-cowsay-image:latest .
-          docker tag ghcr.io/${{ github.repository }}/my-cowsay-image:latest ghcr.io/${{ github.repository }}/my-cowsay-image:${{ github.sha }}
+          docker build -t ghcr.io/alessandrof-newesis/my-cowsay-image:latest .
+          docker tag ghcr.io/alessandrof-newesis/my-cowsay-image:latest ghcr.io/alessandrof-newesis/my-cowsay-image:${{ github.sha }}
 
       - name: Run test task
-        run: docker run --rm ghcr.io/${{ github.repository }}/my-cowsay-image:latest > output.txt
+        run: docker run --rm ghcr.io/alessandrof-newesis/my-cowsay-image:latest > output.txt
 
       - name: Check task
         run: |
@@ -28,5 +28,5 @@ jobs:
 
       - name: Push Docker Image to GitHub Container Registry
         run: |
-          docker push ghcr.io/${{ github.repository }}/my-cowsay-image:latest
-          docker push ghcr.io/${{ github.repository }}/my-cowsay-image:${{ github.sha }}
+          docker push ghcr.io/alessandrof-newesis/my-cowsay-image:latest
+          docker push ghcr.io/alessandrof-newesis/my-cowsay-image:${{ github.sha }}
