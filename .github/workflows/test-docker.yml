@@ -16,7 +16,7 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build -t ghcr.io/alessandrof-newesis/my-cowsay-image:latest .
-          docker tag ghcr.io/alessandrof-newesis/my-cowsay-image:latest ghcr.io/alessandrof-newesis/my-cowsay-image:${{ github.sha }}
+          docker tag ghcr.io/alessandrof-newesis/my-cowsay-image:latest ghcr.io/alessandrof-newesis/my-cowsay-image:${{ github.sha }} ghcr.io/alessandrof-newesis/my-cowsay-image:0.0.1
 
       - name: Run test task
         run: docker run --rm ghcr.io/alessandrof-newesis/my-cowsay-image:latest > output.txt
@@ -30,3 +30,4 @@ jobs:
         run: |
           docker push ghcr.io/alessandrof-newesis/my-cowsay-image:latest
           docker push ghcr.io/alessandrof-newesis/my-cowsay-image:${{ github.sha }}
+          docker push ghcr.io/alessandrof-newesis/my-cowsay-image:0.0.1
