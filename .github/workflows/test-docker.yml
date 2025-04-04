@@ -13,14 +13,48 @@ jobs:
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
+
+      - name: Bump semantic version from commit
+        id: bump_version
+        run: |
+          # Leggi versione corrente
+          VERSION=$(cat VERSION | tr -d '\n')
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+      
+          # Leggi l'ultimo messaggio di commit
+          COMMIT_MSG=$(git log -1 --pretty=%B | tr -d '\n')
+      
+          # Determina tipo di bump
+          if [[ "$COMMIT_MSG" == BREAKING:* ]]; then
+            MAJOR=$((MAJOR + 1))
+            MINOR=0
+            PATCH=0
+          elif [[ "$COMMIT_MSG" == feat:* ]]; then
+            MINOR=$((MINOR + 1))
+            PATCH=0
+          else
+            PATCH=$((PATCH + 1))
+          fi
+      
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "Commit: $COMMIT_MSG"
+          echo "Version bumped to: $NEW_VERSION"
+      
+          echo "$NEW_VERSION" > VERSION
+          echo "version=$NEW_VERSION" >> $GITHUB_ENV
+
+
+
+
       - name: Leggi versione da file
         id: get_version
         run: echo "version=$(cat VERSION | tr -d '\n')" >> "$GITHUB_OUTPUT"
         
       - name: Build Docker Image
         run: |
+          echo "Versione letta: $version"
           docker build -t ghcr.io/alessandrof-newesis/my-cowsay-image:latest .
-          docker tag ghcr.io/alessandrof-newesis/my-cowsay-image:latest ghcr.io/alessandrof-newesis/my-cowsay-image:${{ steps.get_version.outputs.version }}
+          docker tag ghcr.io/alessandrof-newesis/my-cowsay-image:latest ghcr.io/alessandrof-newesis/my-cowsay-image:$version
           docker tag ghcr.io/alessandrof-newesis/my-cowsay-image:latest ghcr.io/alessandrof-newesis/my-cowsay-image:${{ github.sha }}
 
 
@@ -36,5 +70,6 @@ jobs:
       - name: Push Docker Image to GitHub Container Registry
         run: |
           docker push ghcr.io/alessandrof-newesis/my-cowsay-image:latest
-          docker push ghcr.io/alessandrof-newesis/my-cowsay-image:${{ steps.get_version.outputs.version }}
+          docker push ghcr.io/alessandrof-newesis/my-cowsay-image:$version
           docker push ghcr.io/alessandrof-newesis/my-cowsay-image:${{ github.sha }}
+
