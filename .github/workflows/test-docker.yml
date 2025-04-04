@@ -19,7 +19,12 @@ jobs:
           # Leggi versione corrente
           VERSION=$(cat VERSION | tr -d '\n')
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
-      
+
+          echo "VERSION=$VERSION"
+          echo "MAJOR=$MAJOR"
+          echo "MINOR=$MINOR"
+          echo "PATCH=$PATCH"
+          
           # Leggi l'ultimo messaggio di commit
           COMMIT_MSG=$(git log -1 --pretty=%B | tr -d '\n')
       
