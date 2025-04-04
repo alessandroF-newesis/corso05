@@ -58,8 +58,6 @@ jobs:
           docker tag ghcr.io/alessandrof-newesis/my-cowsay-image:latest ghcr.io/alessandrof-newesis/my-cowsay-image:$version
           docker tag ghcr.io/alessandrof-newesis/my-cowsay-image:latest ghcr.io/alessandrof-newesis/my-cowsay-image:${{ github.sha }}
 
-
-
       - name: Run test task
         run: docker run --rm ghcr.io/alessandrof-newesis/my-cowsay-image:latest > output.txt
 
@@ -73,7 +71,6 @@ jobs:
           docker push ghcr.io/alessandrof-newesis/my-cowsay-image:latest
           docker push ghcr.io/alessandrof-newesis/my-cowsay-image:$version
           docker push ghcr.io/alessandrof-newesis/my-cowsay-image:${{ github.sha }}
-
 
       - name: Commit updated VERSION
         run: |
