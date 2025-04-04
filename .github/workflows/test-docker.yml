@@ -13,7 +13,6 @@ jobs:
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-
       - name: Bump semantic version from commit
         id: bump_version
         run: |
@@ -43,9 +42,6 @@ jobs:
           echo "$NEW_VERSION" > VERSION
           echo "version=$NEW_VERSION" >> $GITHUB_ENV
 
-
-
-
       - name: Leggi versione da file
         id: get_version
         run: echo "version=$(cat VERSION | tr -d '\n')" >> "$GITHUB_OUTPUT"
@@ -73,3 +69,11 @@ jobs:
           docker push ghcr.io/alessandrof-newesis/my-cowsay-image:$version
           docker push ghcr.io/alessandrof-newesis/my-cowsay-image:${{ github.sha }}
 
+
+      - name: Commit updated VERSION
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add VERSION
+          git commit -m "chore: bump version [skip ci]"
+          git push
