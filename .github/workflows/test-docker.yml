@@ -15,13 +15,15 @@ jobs:
 
       - name: Leggi versione da file
         id: get_version
-        run: echo "version=$(cat VERSION)" >> "$GITHUB_OUTPUT"
-
+        run: echo "version=$(cat VERSION | tr -d '\n')" >> "$GITHUB_OUTPUT"
+        
       - name: Build Docker Image
         run: |
           docker build -t ghcr.io/alessandrof-newesis/my-cowsay-image:latest .
           docker tag ghcr.io/alessandrof-newesis/my-cowsay-image:latest ghcr.io/alessandrof-newesis/my-cowsay-image:${{ steps.get_version.outputs.version }}
           docker tag ghcr.io/alessandrof-newesis/my-cowsay-image:latest ghcr.io/alessandrof-newesis/my-cowsay-image:${{ github.sha }}
+
+
 
       - name: Run test task
         run: docker run --rm ghcr.io/alessandrof-newesis/my-cowsay-image:latest > output.txt
