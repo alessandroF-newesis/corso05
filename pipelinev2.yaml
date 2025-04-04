@@ -1,0 +1,38 @@
+name: Test & Push Docker Image
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Leggi versione da file
+        id: get_version
+        run: echo "version=$(cat VERSION | tr -d '\n')" >> "$GITHUB_OUTPUT"
+        
+      - name: Build Docker Image
+        run: |
+          docker build -t ghcr.io/alessandrof-newesis/my-cowsay-image:latest .
+          docker tag ghcr.io/alessandrof-newesis/my-cowsay-image:latest ghcr.io/alessandrof-newesis/my-cowsay-image:${{ steps.get_version.outputs.version }}
+          docker tag ghcr.io/alessandrof-newesis/my-cowsay-image:latest ghcr.io/alessandrof-newesis/my-cowsay-image:${{ github.sha }}
+
+      - name: Run test task
+        run: docker run --rm ghcr.io/alessandrof-newesis/my-cowsay-image:latest > output.txt
+
+      - name: Check task
+        run: |
+          cat output.txt
+          grep "hello" output.txt || (echo "Test Failed" && exit 1)
+
+      - name: Push Docker Image to GitHub Container Registry
+        run: |
+          docker push ghcr.io/alessandrof-newesis/my-cowsay-image:latest
+          docker push ghcr.io/alessandrof-newesis/my-cowsay-image:${{ steps.get_version.outputs.version }}
+          docker push ghcr.io/alessandrof-newesis/my-cowsay-image:${{ github.sha }}
